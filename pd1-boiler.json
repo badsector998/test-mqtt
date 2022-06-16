@@ -1,0 +1,19 @@
+{
+    "cems ": "600154a3-8a1e-41d6-8aab-05f31174a7bb",
+    "payload ": [
+        {
+            "name": "CO2",
+            "value": 51.193460893888506,
+            "value_condition_override": -29.92684890975093,
+            "timestamp": "2022-06-16T05:30:00.003294+00:00",
+            "condition": "running"
+        },
+        {
+            "name": "O2",
+            "value": 44.94867747940269,
+            "value_condition_override": 44.94867747940269,
+            "timestamp": "2022-06-16T05:30:00.003294+00:00",
+            "condition": "running"
+        }
+    ]
+}
