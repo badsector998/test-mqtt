@@ -4,10 +4,10 @@ import paho.mqtt.client as mqtt
 import json
 
 #mqtt info
-staging = "10.184.0.4"
+staging = "dashboard.cems.intusi.com"
 localhost = "localhost"
 topic = "c3m5-4pp"
-port = 9001
+port = 1883
 localport = 1883
 pd1_cems2 = "849c2bf6-6b33-4400-b45f-2f0ba4dacec5"
 pd1_boiler = "600154a3-8a1e-41d6-8aab-05f31174a7bb"
@@ -24,7 +24,8 @@ def on_publish(client, userdata, result):
 #create mqtt client
 client = mqtt.Client()
 #connect client to broker target
-client.connect(localhost, localport)
+client.connect(staging, port)
+client.on_connect = on_connect
 #call publish callback function
 client.on_publish = on_publish
 
@@ -37,10 +38,10 @@ with open('pd1-boiler.json') as f:
 datas = json.dumps(data, indent=4)
 print(datas)
 
-#try for publish the payload
-for i in range(20):
-    client.publish(topic, datas)
-    time.sleep(2)
+client.publish(topic, datas)
+# for i in range(20):
+#     client.publish(topic, datas)
+#     time.sleep(2)
 
 
 # client.disconnect()
