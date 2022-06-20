@@ -5,10 +5,6 @@ import psycopg2
 import datetime
 import paho.mqtt.client as mqtt
 
-pd1_cems2 = "849c2bf6-6b33-4400-b45f-2f0ba4dacec5"
-pd1_boiler = "600154a3-8a1e-41d6-8aab-05f31174a7bb"
-regex = r'(?<!: )"(\S*?)"'
-
 class DateTimeEncoder(JSONEncoder):
         #Override the default method
         def default(self, obj):
