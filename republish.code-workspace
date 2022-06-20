@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../cems-fix-tf-master/cems-app-iot"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

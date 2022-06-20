@@ -5,9 +5,12 @@ from turtle import update
 from numpy import append
 import psycopg2
 import datetime
+import re
+import paho.mqtt.client as mqtt
 
-pd1_cems2 = " 849c2bf6-6b33-4400-b45f-2f0ba4dacec5"
+pd1_cems2 = "849c2bf6-6b33-4400-b45f-2f0ba4dacec5"
 pd1_boiler = "600154a3-8a1e-41d6-8aab-05f31174a7bb"
+regex = r'(?<!: )"(\S*?)"'
 
 class DateTimeEncoder(JSONEncoder):
         #Override the default method
@@ -28,11 +31,11 @@ def parseData(data):
         current_parameter_name = current_hq_parameter_name
 
     payload_build = {
-                     "name":current_parameter_name, 
-                     "value":value, 
-                     "value_condition_override":corrected_value, 
-                     "timestamp":measured_at, 
-                     "condition":stack_condition
+                     'name':current_parameter_name, 
+                     'value':value, 
+                     'value_condition_override':corrected_value, 
+                     'timestamp':measured_at, 
+                     'condition':stack_condition
                     }
 
     return stack_mqtt_id, payload_build
@@ -47,7 +50,12 @@ connection = psycopg2.connect(database="postgres",
 cursor = connection.cursor()
 
 #create query
-cursor.execute("select stack_mqtt_id, current_parameter_name, current_hq_parameter_name, value, corrected_value, measured_at, stack_condition from measurements order by measured_at desc limit 50")
+cursor.execute("""
+                select stack_mqtt_id, current_parameter_name, current_hq_parameter_name, value, corrected_value, measured_at, stack_condition 
+                from measurements 
+                where extract('month' from measured_at) = 5
+                order by measured_at asc
+                """)
 
 #save query result
 dummy_data = cursor.fetchall()
@@ -72,11 +80,46 @@ for key in measurement:
     # print(key + " : ")
     # print(measurement[key])
     # print(convertPayload(measurement[key]))
-    create_payload = {"cems " : key, "payload " : measurement[key]}
+    create_payload = {'cems' : key, 'payload' : measurement[key]}
     payload = json.dumps(create_payload, indent=4, cls=DateTimeEncoder)
     print(payload)
 
 # todo : create mqtt client for publishing the payload
+staging = "dashboard.cems.intusi.com"
+topic = "c3m5-4pp"
+port = 1883
+
+#callback function
+def on_connect(client, userdata, flags, rc):
+    print("connected with status : " + str(rc))
+    client.subscribe(topic)
+    client.publish(topic, payload)
+
+#callback function
+def on_publish(client, userdata, result):
+    print("Data published")
+    
+def on_message(client, userdata,msg):
+    print(msg.topic)
+    print(msg.payload)
+    payload = json.loads(msg.payload)
+    print(payload)
+    client.disconnect()
+
+#create mqtt client
+client = mqtt.Client()
+
+#call publish callback function
+client.on_publish = on_publish
+#call connect callback function
+client.on_connect = on_connect
+#call message callback function
+client.on_message = on_message
+
+#connect to broker target
+client.connect(staging, 1883, 60)
+
+client.loop_forever()
 
 
 
