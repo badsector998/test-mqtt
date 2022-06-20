@@ -59,7 +59,6 @@ measurement = dict()
 for i in range(len(dummy_data)):
     #parse data
     stack_mqtt_id, payload = parseData(dummy_data[i])
-    # print(payload)
 
     #check if key exist, if not create new dict
     if stack_mqtt_id not in measurement:
@@ -70,9 +69,6 @@ for i in range(len(dummy_data)):
 
 #create payload
 for key in measurement:
-    # print(key + " : ")
-    # print(measurement[key])
-    # print(convertPayload(measurement[key]))
     create_payload = {'cems' : key, 'payload' : measurement[key]}
     payload = json.dumps(create_payload, indent=4, cls=DateTimeEncoder)
     print(payload)
