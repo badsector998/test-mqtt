@@ -1,11 +1,8 @@
-from copy import deepcopy
 import json
 from json import JSONEncoder
-from turtle import update
 from numpy import append
 import psycopg2
 import datetime
-import re
 import paho.mqtt.client as mqtt
 
 pd1_cems2 = "849c2bf6-6b33-4400-b45f-2f0ba4dacec5"
@@ -59,7 +56,7 @@ cursor.execute("""
 
 #save query result
 dummy_data = cursor.fetchall()
-
+#create measurement dict for storing query result
 measurement = dict()
 
 #fetch, parse, group data
