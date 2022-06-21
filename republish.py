@@ -33,6 +33,9 @@ def parseData(data):
 
     return stack_mqtt_id, payload_build
 
+# todo : create yaml parser. get database info.
+#        store it to connection properties.
+
 #connect to local postgre
 connection = psycopg2.connect(database="postgres",
                               host="localhost",
@@ -40,8 +43,8 @@ connection = psycopg2.connect(database="postgres",
                               password="example-password",
                               port="5432")
 
-cursor = connection.cursor()
 
+cursor = connection.cursor()
 #create query
 cursor.execute("""
                 select stack_mqtt_id, current_parameter_name, current_hq_parameter_name, value, corrected_value, measured_at, stack_condition 
@@ -74,8 +77,8 @@ for key in measurement:
     print(payload)
 
 # todo : create mqtt client for publishing the payload
-staging = "dashboard.cems.intusi.com"
-topic = "c3m5-4pp"
+staging = "-"
+topic = "-"
 port = 1883
 
 #callback function
