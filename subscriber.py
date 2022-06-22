@@ -10,7 +10,7 @@ timelive = 60
 #on connect callback function
 def on_connect(client, userdata, flags, rc):
     print("connected with result code : " + str(rc))
-    client.subscribe("c3m5-4pp")
+    client.subscribe("-")
 
 #on message callback function
 def on_message(client, userdata, msg):

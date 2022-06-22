@@ -5,10 +5,10 @@ import json
 import sched
 
 #mqtt info
-staging = "dashboard.cems.intusi.com"
-staging2 = "34.101.132.232"
+staging = ""
+staging2 = ""
 localhost = "localhost"
-topic = "c3m5-4pp"
+topic = ""
 topic2 = "test-topic"
 port = 1883
 localport = 1883

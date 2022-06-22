@@ -1,5 +1,6 @@
 import json
 from json import JSONEncoder
+from pydoc import cli
 from numpy import append
 import psycopg2
 import datetime
@@ -33,6 +34,25 @@ def parseData(data):
 
     return stack_mqtt_id, payload_build
 
+
+#callback function
+def on_connect(client, userdata, flags, rc):
+    print("connected with status : " + str(rc))
+    client.subscribe(topic)
+    # client.publish(topic, payload)
+
+#callback function
+def on_publish(client, userdata, result):
+    print("Data published")
+    
+def on_message(client, userdata,msg):
+    print(msg.topic)
+    print(msg.payload)
+    payload = json.loads(msg.payload)
+    print(payload)
+    client.disconnect()
+
+
 # todo : create yaml parser. get database info.
 #        store it to connection properties.
 
@@ -49,69 +69,43 @@ cursor = connection.cursor()
 cursor.execute("""
                 select stack_mqtt_id, current_parameter_name, current_hq_parameter_name, value, corrected_value, measured_at, stack_condition 
                 from measurements 
-                where extract('month' from measured_at) = 5
+                where extract('month' from measured_at) = 6
                 order by measured_at asc
+                limit 50
                 """)
 
 #save query result
 dummy_data = cursor.fetchall()
 #create measurement dict for storing query result
 measurement = dict()
-
-#fetch, parse, group data
-for i in range(len(dummy_data)):
-    #parse data
-    stack_mqtt_id, payload = parseData(dummy_data[i])
-
-    #check if key exist, if not create new dict
-    if stack_mqtt_id not in measurement:
-        measurement[stack_mqtt_id] = []
-
-    #assign list of list values to dict
-    measurement[stack_mqtt_id] = append(measurement[stack_mqtt_id], payload).tolist()
-
-#create payload
-for key in measurement:
-    create_payload = {'cems' : key, 'payload' : measurement[key]}
-    payload = json.dumps(create_payload, indent=4, cls=DateTimeEncoder)
-    print(payload)
-
-# todo : create mqtt client for publishing the payload
+#mqtt info
 staging = "-"
 topic = "-"
 port = 1883
 
-#callback function
-def on_connect(client, userdata, flags, rc):
-    print("connected with status : " + str(rc))
-    client.subscribe(topic)
-    client.publish(topic, payload)
-
-#callback function
-def on_publish(client, userdata, result):
-    print("Data published")
-    
-def on_message(client, userdata,msg):
-    print(msg.topic)
-    print(msg.payload)
-    payload = json.loads(msg.payload)
-    print(payload)
-    client.disconnect()
-
 #create mqtt client
 client = mqtt.Client()
 
-#call publish callback function
+#call on publish callback function
 client.on_publish = on_publish
 #call connect callback function
 client.on_connect = on_connect
 #call message callback function
 client.on_message = on_message
 
-#connect to broker target
-client.connect(staging, 1883, 60)
 
-client.loop_forever()
+#fetch, parse, group data
+for i in range(len(dummy_data)):
+    #parse data
+    stack_mqtt_id, payload = parseData(dummy_data[i])
+    measurement[stack_mqtt_id] = payload
+    create_payload = {'cems' : stack_mqtt_id, 'payload' : [measurement[stack_mqtt_id]]}
+    payload = json.dumps(create_payload, indent=4, cls=DateTimeEncoder)
+    print(payload)
+    #connect to broker target
+    client.connect(staging, 1883, 60)
+    client.publish(topic, payload)
+
 
 
 
