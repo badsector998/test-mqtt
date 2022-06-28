@@ -31,9 +31,6 @@ def run():
         print("Data : " + str(index))
         cl.sendPayload(payload)
 
-if __name__ == '__main__':
-    run()
-
 
 
 
