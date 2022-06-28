@@ -1,0 +1,13 @@
+database:
+  db : mysql
+  host : localhost
+  user : mysql
+  password : root-password
+  port : 3306
+
+apis:
+  local : localhost
+  staging : dummy_mqtt_broker
+  staging_topic : dummy_topic
+  local_topic : test-topic
+  port : 1883

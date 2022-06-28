@@ -4,12 +4,26 @@ import psycopg2
 import datetime
 import paho.mqtt.client as mqtt
 from pyrfc3339 import generator
+import yaml
 
 class DateTimeEncoder(JSONEncoder):
         #Override the default method
         def default(self, obj):
             if isinstance(obj, (datetime.date, datetime.datetime)):
                 return generator.generate(obj)
+
+def parseConfig(file):
+    with open(file, 'r') as stream:
+        try:
+            parsed = yaml.safe_load(stream)
+            return parsed
+        except yaml.YAMLError as e:
+            return e
+
+def openQuery(file):
+    with open(file, 'r') as stream:
+        query = stream.read().replace('\n', ' ')
+    return query
 
 def parseData(data):
     stack_mqtt_id = data[0]
@@ -37,7 +51,7 @@ def parseData(data):
 #callback function
 def on_connect(client, userdata, flags, rc):
     print("connected with status : " + str(rc))
-    client.subscribe(topic)
+    client.subscribe(local_topic)
     # client.publish(topic, payload)
 
 #callback function
@@ -51,36 +65,36 @@ def on_message(client, userdata,msg):
     print(payload)
     client.disconnect()
 
+#============== main =================
 
-# todo : create yaml parser. get database info.
-#        store it to connection properties.
+#config.yaml parse
+global_conf = parseConfig("config.yaml")
+db_conf = global_conf['database']
+apis_conf = global_conf['apis']
 
 #connect to local postgre
-connection = psycopg2.connect(database="postgres",
-                              host="localhost",
-                              user="postgres",
-                              password="example-password",
-                              port="5432")
-
-
+connection = psycopg2.connect(database=db_conf['db'],
+                              host=db_conf['host'],
+                              user=db_conf['user'],
+                              password=db_conf['password'],
+                              port=db_conf['port'])
 cursor = connection.cursor()
+
+#load query from text file
+query_string = openQuery("query.txt")
+
 #create query
-cursor.execute("""
-                select stack_mqtt_id, current_parameter_name, current_hq_parameter_name, value, corrected_value, measured_at, stack_condition 
-                from measurements 
-                where extract('month' from measured_at) = 6
-                order by measured_at asc
-                limit 50
-                """)
+cursor.execute(query_string)
 
 #save query result
 data = cursor.fetchall()
-#create measurement dict for storing query result
-measurement = dict()
+
 #mqtt info
-staging = "localhost"
-topic = "test-topic"
-port = 1883
+staging = apis_conf['staging']
+staging_topic = apis_conf['staging_topic']
+local = apis_conf['local']
+local_topic = apis_conf['local_topic']
+port = apis_conf['port']
 
 #create mqtt client
 client = mqtt.Client()
@@ -92,10 +106,8 @@ client.on_connect = on_connect
 #call message callback function
 client.on_message = on_message
 
-
 #connect to broker target
-client.connect(staging, 1883, 60)
-
+client.connect(local, port, 60)
 
 #fetch, parse, send
 for ms in data:
@@ -106,7 +118,7 @@ for ms in data:
     print(payload)
     index = data.index(ms)
     print("Data : " + str(index))
-    client.publish(topic, payload)
+    client.publish(local_topic, payload)
 
 
 
