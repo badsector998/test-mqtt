@@ -51,7 +51,7 @@ def parseData(data):
 #callback function
 def on_connect(client, userdata, flags, rc):
     print("connected with status : " + str(rc))
-    client.subscribe(local_topic)
+    client.subscribe(topic)
     # client.publish(topic, payload)
 
 #callback function
@@ -90,10 +90,8 @@ cursor.execute(query_string)
 data = cursor.fetchall()
 
 #mqtt info
-staging = apis_conf['staging']
-staging_topic = apis_conf['staging_topic']
-local = apis_conf['local']
-local_topic = apis_conf['local_topic']
+broker = apis_conf['broker']
+topic = apis_conf['topic']
 port = apis_conf['port']
 
 #create mqtt client
@@ -107,7 +105,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 #connect to broker target
-client.connect(local, port, 60)
+client.connect(broker, port, 60)
 
 #fetch, parse, send
 for ms in data:
@@ -118,7 +116,7 @@ for ms in data:
     print(payload)
     index = data.index(ms)
     print("Data : " + str(index))
-    client.publish(local_topic, payload)
+    client.publish(topic, payload)
 
 
 
