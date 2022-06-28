@@ -1,7 +1,7 @@
-import repo
-import db
-from db import db_instance
-from mqtt import repoMqtt
+from lib import repo
+from lib import db
+from lib.db import db_instance
+from lib.mqtt import repoMqtt
 
 def initiateProgram():
     db_conf, api_conf = repo.loadConf("config.yaml")
