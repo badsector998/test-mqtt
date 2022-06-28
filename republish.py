@@ -1,16 +1,15 @@
 import json
 from json import JSONEncoder
-from pydoc import cli
-from numpy import append
 import psycopg2
 import datetime
 import paho.mqtt.client as mqtt
+from pyrfc3339 import generator
 
 class DateTimeEncoder(JSONEncoder):
         #Override the default method
         def default(self, obj):
             if isinstance(obj, (datetime.date, datetime.datetime)):
-                return obj.isoformat()
+                return generator.generate(obj)
 
 def parseData(data):
     stack_mqtt_id = data[0]
@@ -75,12 +74,12 @@ cursor.execute("""
                 """)
 
 #save query result
-dummy_data = cursor.fetchall()
+data = cursor.fetchall()
 #create measurement dict for storing query result
 measurement = dict()
 #mqtt info
-staging = "-"
-topic = "-"
+staging = "localhost"
+topic = "test-topic"
 port = 1883
 
 #create mqtt client
@@ -94,16 +93,19 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 
-#fetch, parse, group data
-for i in range(len(dummy_data)):
+#connect to broker target
+client.connect(staging, 1883, 60)
+
+
+#fetch, parse, send
+for ms in data:
     #parse data
-    stack_mqtt_id, payload = parseData(dummy_data[i])
-    measurement[stack_mqtt_id] = payload
-    create_payload = {'cems' : stack_mqtt_id, 'payload' : [measurement[stack_mqtt_id]]}
+    stack_mqtt_id, payload = parseData(ms)
+    create_payload = {'cems' : stack_mqtt_id, 'payload' : [payload]}
     payload = json.dumps(create_payload, indent=4, cls=DateTimeEncoder)
     print(payload)
-    #connect to broker target
-    client.connect(staging, 1883, 60)
+    index = data.index(ms)
+    print("Data : " + str(index))
     client.publish(topic, payload)
 
 
