@@ -18,6 +18,14 @@ class db_instance:
                                      )
         return connection
 
+    def executeQuery(self, queryText):
+        connection = self.connect()
+        cursor = connection.cursor()
+        query_string = openQuery(queryText)
+        cursor.execute(query_string)
+        data = cursor.fetchall()
+        return data
+
 def openQuery(file):
     with open(file, 'r') as stream:
         query = stream.read().replace('\n', ' ')
