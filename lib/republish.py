@@ -1,6 +1,3 @@
-from turtle import st
-from venv import create
-from numpy import append
 from lib import repo
 from lib.db import db_instance
 from lib.mqtt import repoMqtt
@@ -16,15 +13,9 @@ def run():
     db_conf, broker, topic, port = initiateProgram()
     db = db_instance(db_conf)
     data = db.executeQuery("query.txt")
-    measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
-        if stack_mqtt_id not in measurement:
-            measurement[stack_mqtt_id] = []
-        measurement[stack_mqtt_id] = append(measurement[stack_mqtt_id], values).tolist()
-
-    for key in measurement:
-        payload = repo.createPayload(key, measurement[key])
+        payload = repo.createPayload(stack_mqtt_id, values)
         print(payload)
         cl = repoMqtt(broker, topic, port, 60)
         cl.sendPayload(payload)

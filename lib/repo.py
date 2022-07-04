@@ -48,6 +48,6 @@ def parseData(data):
 
 
 def createPayload(key, value):
-    build_payload = {'cems' : key, 'payload' : value}
+    build_payload = {'cems' : key, 'payload' : [value]}
     payload = json.dumps(build_payload, indent=4, cls=DateTimeEncoder)
     return payload
