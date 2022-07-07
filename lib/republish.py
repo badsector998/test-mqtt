@@ -16,7 +16,8 @@ def run():
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
         payload = repo.createPayload(stack_mqtt_id, values)
-        print(payload)
+        # print(payload)
+        repo.createDebugLog(payload)
         cl = repoMqtt(broker, topic, port, 60)
         cl.sendPayload(payload)
 

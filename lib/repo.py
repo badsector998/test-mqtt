@@ -1,8 +1,10 @@
+from cmath import log
 import yaml
 import json
 from json import JSONEncoder
 import datetime
 from pyrfc3339 import generator
+import logging
 
 class DateTimeEncoder(JSONEncoder):
         #Override the default method
@@ -51,3 +53,7 @@ def createPayload(key, value):
     build_payload = {'cems' : key, 'payload' : [value]}
     payload = json.dumps(build_payload, indent=4, cls=DateTimeEncoder)
     return payload
+
+def createDebugLog(message):
+    logging.basicConfig(filename="log.txt", level=logging.DEBUG, format="%(asctime)s %(message)s", filemode="w")
+    logging.debug(message)

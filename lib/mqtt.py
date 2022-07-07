@@ -1,5 +1,6 @@
 import json
 import paho.mqtt.client as mqtt
+from lib import repo
 
 class repoMqtt:
     def __init__(self, broker, topic, port, keepAlive) -> None:
@@ -24,10 +25,12 @@ class repoMqtt:
         self.client.publish(self.topic, payload)
 
 def on_connect(self, client, userdata, flags, rc):
-    print("connected with status : " + str(rc))
+    # print("connected with status : " + str(rc))
+    repo.createDebugLog("connected with status : " + str(rc))
 
 def on_publish(client, userdata, result):
-    print("Data published")
+    # print("Data published")
+    repo.createDebugLog("Data published")
 
 def on_message(client, userdata,msg):
     print(msg.topic)
