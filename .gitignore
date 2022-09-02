@@ -5,3 +5,5 @@ republish.code-workspace
 build
 dist
 main.spec
+.vscode
+log*
