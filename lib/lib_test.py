@@ -81,10 +81,10 @@ class MqttTestClass(unittest.TestCase):
         data = dbInstance.executeQuery("query.txt")
         mqttIdTest, PayloadContent = repo.parseData(data)
         Payload = repo.createPayload(mqttIdTest, PayloadContent)
-        self.assertIsInstance(
-                                mqttClient.sendPayload(Payload),
-                                mqtt.mqtt.MQTTMessageInfo
-                            )
+        self.assertIs(
+                        mqttClient.sendPayload(Payload),
+                        mqtt.mqtt.MQTTMessageInfo
+                    )
 
 
 unittest.main()
