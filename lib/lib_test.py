@@ -82,7 +82,7 @@ class MqttTestClass(unittest.TestCase):
         mqttIdTest, PayloadContent = repo.parseData(data)
         Payload = repo.createPayload(mqttIdTest, PayloadContent)
         info = mqttClient.sendPayload(Payload)
-        self.assertIs(
+        self.assertIsInstance(
                         info,
                         mqtt.mqtt.MQTTMessageInfo
                     )
