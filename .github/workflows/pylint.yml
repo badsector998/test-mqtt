@@ -21,7 +21,3 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
-    - name: Run test from lib directory
-      run: |
-        cd lib/
-        python lib_test.py
