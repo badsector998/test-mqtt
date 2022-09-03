@@ -23,8 +23,7 @@ class repoMqtt:
         return client
 
     def sendPayload(self, payload):
-        info = self.client.publish(self.topic, payload)
-        return info
+        self.client.publish(self.topic, payload)
 
 
 def on_connect(self, client, userdata, flags, rc):
