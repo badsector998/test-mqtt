@@ -20,4 +20,4 @@ jobs:
     - name: Python Code Quality and Lint
       uses: ankitvgupta/pycodestyle-action@master
       with: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
