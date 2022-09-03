@@ -1,6 +1,6 @@
 import json
 import paho.mqtt.client as mqtt
-from lib import repo
+import repo
 
 
 class repoMqtt:
