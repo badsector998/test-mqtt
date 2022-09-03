@@ -59,8 +59,7 @@ class DBTestClass(unittest.TestCase):
         dbconf, _ = repo.loadConf("config-example.yaml")
         dbInstance = db.db_instance(dbconf)
         conn = dbInstance.connect()
-        dbInstance.CloseDBInstance(conn)
-        self.assertIsNone(conn.cursor())
+        self.assertIsNone(dbInstance.CloseDBInstance(conn))
 
 
 class MqttTestClass(unittest.TestCase):
@@ -79,8 +78,13 @@ class MqttTestClass(unittest.TestCase):
         topic = api_conf['topic']
         port = api_conf['port']
         mqttClient = mqtt.repoMqtt(broker, topic, port, 60)
+        dbconf, _ = repo.loadConf("config-example.yaml")
+        dbInstance = db.db_instance(dbconf)
+        data = dbInstance.executeQuery("query.txt")
+        mqttIdTest, PayloadContent = repo.parseData(data)
+        Payload = repo.createPayload(mqttIdTest, PayloadContent)
         self.assertIsNotNone(
-                                mqttClient.sendPayload("test"),
+                                mqttClient.sendPayload(Payload),
                                 "mqtt payload does not sent"
                             )
 
