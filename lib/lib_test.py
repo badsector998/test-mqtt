@@ -71,21 +71,20 @@ class MqttTestClass(unittest.TestCase):
         self.assertIsNotNone(mqttClient)
 
     def test_MqttSendPayload(self):
-        # _, api_conf = repo.loadConf("config-example.yaml")
-        # broker = api_conf['broker']
-        # topic = api_conf['topic']
-        # port = api_conf['port']
-        # mqttClient = mqtt.repoMqtt(broker, topic, port, 60)
-        # dbconf, _ = repo.loadConf("config-example.yaml")
-        # dbInstance = db.db_instance(dbconf)
-        # data = dbInstance.executeQuery("query.txt")
-        # mqttIdTest, PayloadContent = repo.parseData(data)
-        # Payload = repo.createPayload(mqttIdTest, PayloadContent)
-        # self.assertIsNotNone(
-        #                         mqttClient.sendPayload(Payload),
-        #                         "mqtt payload does not sent"
-        #                     )
-        pass
+        _, api_conf = repo.loadConf("config-example.yaml")
+        broker = api_conf['broker']
+        topic = api_conf['topic']
+        port = api_conf['port']
+        mqttClient = mqtt.repoMqtt(broker, topic, port, 60)
+        dbconf, _ = repo.loadConf("config-example.yaml")
+        dbInstance = db.db_instance(dbconf)
+        data = dbInstance.executeQuery("query.txt")
+        mqttIdTest, PayloadContent = repo.parseData(data)
+        Payload = repo.createPayload(mqttIdTest, PayloadContent)
+        self.assertIsInstance(
+                                mqttClient.sendPayload(Payload),
+                                mqtt.MQTTMessageInfo
+                            )
 
 
 unittest.main()
