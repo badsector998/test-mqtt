@@ -34,10 +34,7 @@ class RepoTestClass(unittest.TestCase):
 
     def test_CreateDebugLog(self):
         message = "testing debug log"
-        self.assertIsNotNone(
-                                repo.createDebugLog(message),
-                                "debug log not created"
-                            )
+        repo.createDebugLog(message)
         path = Path("log.txt")
         self.assertTrue(path.is_file(), "log file doesnt exist")
 
