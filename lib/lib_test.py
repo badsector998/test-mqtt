@@ -60,7 +60,7 @@ class DBTestClass(unittest.TestCase):
         dbInstance = db.db_instance(dbconf)
         conn = dbInstance.connect()
         dbInstance.CloseDBInstance(conn)
-        self.assertIsNone(conn)
+        self.assertIsNone(conn.cursor())
 
 
 class MqttTestClass(unittest.TestCase):
