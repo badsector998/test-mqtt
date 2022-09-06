@@ -4,6 +4,7 @@ from lib import repo
 from lib.db import db_instance
 from lib.mqtt import repoMqtt
 
+
 def initiateProgram():
     db_conf, api_conf = repo.loadConf("config.yaml")
     broker = api_conf['broker']
@@ -18,21 +19,37 @@ def run():
     client = cl.createMqttClient()
     client.connect(cl.broker, cl.port, 60)
     client.loop_start()
-    db = db_instance(db_conf)
-    data = db.executeQuery("query.txt")
+    dbIns = db_instance(db_conf)
+    data = dbIns.executeQuery("query.txt")
+    measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
         if stack_mqtt_id not in measurement:
             measurement[stack_mqtt_id] = []
-        measurement[stack_mqtt_id] = append(measurement[stack_mqtt_id], values).tolist()
+        measurement[stack_mqtt_id] = append(
+                                                measurement[stack_mqtt_id],
+                                                values
+                                            ).tolist()
 
     for key in measurement:
         payload = repo.createPayload(key, measurement[key])
         print(payload)
         info = client.publish(cl.topic, payload)
         info.wait_for_publish(2)
-        print(info.is_published(), cl.broker, cl.port, cl.topic, len(measurement[key]))
+        print(
+                info.is_published(),
+                cl.broker,
+                cl.port,
+                cl.topic,
+                len(measurement[key])
+            )
         time.sleep(10)
-        
+
     client.loop_stop()
     client.disconnect()
+    print("Closing db connection", dbIns.conn, dbIns.csr)
+    dbIns.conn.close()
+    dbIns.csr.close()
+    print("Closed db connection", dbIns.csr, dbIns.conn)
+    del dbIns.conn
+    del dbIns.csr

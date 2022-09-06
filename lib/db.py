@@ -8,7 +8,8 @@ class db_instance:
         self.user = conf['user']
         self.pswd = conf['password']
         self.port = conf['port']
-        self.connect()
+        self.conn = self.connect()
+        self.csr = self.conn.cursor()
 
     def connect(self):
         connection = psycopg2.connect(
@@ -21,17 +22,11 @@ class db_instance:
         return connection
 
     def executeQuery(self, queryText):
-        connection = self.connect()
-        cursor = connection.cursor()
+        cursor = self.csr
         query_string = openQuery(queryText)
         cursor.execute(query_string)
         data = cursor.fetchall()
         return data
-
-    def CloseDBInstance(self, DbConnection):
-        cursor = DbConnection.cursor()
-        cursor.close()
-        del cursor
 
 
 def openQuery(file):
