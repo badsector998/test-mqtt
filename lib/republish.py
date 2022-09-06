@@ -19,8 +19,8 @@ def run():
     client = cl.createMqttClient()
     client.connect(cl.broker, cl.port, 60)
     client.loop_start()
-    db = db_instance(db_conf)
-    data = db.executeQuery("query.txt")
+    dbIns = db_instance(db_conf)
+    data = dbIns.executeQuery("query.txt")
     measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
@@ -47,3 +47,9 @@ def run():
 
     client.loop_stop()
     client.disconnect()
+    print("Closing db connection", dbIns.conn, dbIns.csr)
+    dbIns.conn.close()
+    dbIns.csr.close()
+    print("Closed db connection", dbIns.csr, dbIns.conn)
+    del dbIns.conn
+    del dbIns.csr

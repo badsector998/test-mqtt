@@ -1,11 +1,4 @@
 {
-<<<<<<< HEAD
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true
-=======
-    "python.linting.pylintEnabled": false,
-    "python.linting.enabled": true,
-    "python.linting.pycodestyleEnabled": true,
-    "nuxt.isNuxtApp": false
->>>>>>> 803b7be29e4f8815a7615b67015192914bf5e6ee
 }
