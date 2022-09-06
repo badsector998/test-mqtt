@@ -1,9 +1,9 @@
-from turtle import st
-from venv import create
+import time
 from numpy import append
 from lib import repo
 from lib.db import db_instance
 from lib.mqtt import repoMqtt
+import paho.mqtt.publish as publish
 
 def initiateProgram():
     db_conf, api_conf = repo.loadConf("config.yaml")
@@ -14,6 +14,10 @@ def initiateProgram():
 
 def run():
     db_conf, broker, topic, port = initiateProgram()
+    cl = repoMqtt(broker, topic, port, 60)
+    client = cl.createMqttClient()
+    client.connect(cl.broker, cl.port, 60)
+    client.loop_start()
     db = db_instance(db_conf)
     data = db.executeQuery("query.txt")
     measurement = {}
@@ -26,9 +30,13 @@ def run():
     for key in measurement:
         payload = repo.createPayload(key, measurement[key])
         print(payload)
-        cl = repoMqtt(broker, topic, port, 60)
-        cl.sendPayload(payload)
-
+        info = client.publish(cl.topic, payload)
+        info.wait_for_publish(2)
+        print(info.is_published(), cl.broker, cl.port, cl.topic, len(measurement[key]))
+        time.sleep(10)
+        
+    client.loop_stop()
+    client.disconnect()
 
 
 

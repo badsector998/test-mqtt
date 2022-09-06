@@ -7,27 +7,28 @@ class repoMqtt:
         self.topic = topic
         self.port = port
         self.keepAlive = keepAlive
-        self.client = self.createMqttClient()
+        # self.client = self.createMqttClient()
 
     def createMqttClient(self):
         #create mqtt client instance
-        client = mqtt.Client()
+        client = mqtt.Client(client_id="mqtt-april")
         #call the callbacks function
         client.on_publish = on_publish
-        client.on_connect = on_connect
+        # client.on_connect = on_connect
         client.on_message = on_message
+        # client.on_disconnect = on_disconnect
         #connect
-        client.connect(self.broker, self.port, self.keepAlive)
+        # client.connect(self.broker, self.port, self.keepAlive)
         return client
 
     def sendPayload(self, payload):
-        self.client.publish(self.topic, payload)
+        self.client.publish(self.topic, payload, qos=1)
 
-def on_connect(self, client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc):
     print("connected with status : " + str(rc))
 
 def on_publish(client, userdata, result):
-    print("Data published")
+    print("Publish call is done")
 
 def on_message(client, userdata,msg):
     print(msg.topic)
@@ -35,3 +36,7 @@ def on_message(client, userdata,msg):
     payload = json.loads(msg.payload)
     print(payload)
     client.disconnect()
+
+def on_disconnect(client, userdata,rc):
+    print("DisConnected result code " + str(rc))
+    client.loop_stop()
