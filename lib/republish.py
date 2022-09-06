@@ -3,7 +3,6 @@ from numpy import append
 from lib import repo
 from lib.db import db_instance
 from lib.mqtt import repoMqtt
-import paho.mqtt.publish as publish
 
 def initiateProgram():
     db_conf, api_conf = repo.loadConf("config.yaml")
@@ -11,6 +10,7 @@ def initiateProgram():
     topic = api_conf['topic']
     port = api_conf['port']
     return db_conf, broker, topic, port
+
 
 def run():
     db_conf, broker, topic, port = initiateProgram()
@@ -20,7 +20,6 @@ def run():
     client.loop_start()
     db = db_instance(db_conf)
     data = db.executeQuery("query.txt")
-    measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
         if stack_mqtt_id not in measurement:
@@ -37,7 +36,3 @@ def run():
         
     client.loop_stop()
     client.disconnect()
-
-
-
-

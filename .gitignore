@@ -2,6 +2,3 @@ config.yaml
 query.txt
 __pycache__
 republish.code-workspace
-build
-dist
-main.spec

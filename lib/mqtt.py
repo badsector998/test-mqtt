@@ -1,5 +1,7 @@
 import json
 import paho.mqtt.client as mqtt
+import repo
+
 
 class repoMqtt:
     def __init__(self, broker, topic, port, keepAlive) -> None:
@@ -10,12 +12,15 @@ class repoMqtt:
         # self.client = self.createMqttClient()
 
     def createMqttClient(self):
+
         #create mqtt client instance
         client = mqtt.Client(client_id="mqtt-april")
         #call the callbacks function
+
         client.on_publish = on_publish
         # client.on_connect = on_connect
         client.on_message = on_message
+
         # client.on_disconnect = on_disconnect
         #connect
         # client.connect(self.broker, self.port, self.keepAlive)
@@ -30,7 +35,7 @@ def on_connect(client, userdata, flags, rc):
 def on_publish(client, userdata, result):
     print("Publish call is done")
 
-def on_message(client, userdata,msg):
+def on_message(client, userdata, msg):
     print(msg.topic)
     print(msg.payload)
     payload = json.loads(msg.payload)
@@ -40,3 +45,4 @@ def on_message(client, userdata,msg):
 def on_disconnect(client, userdata,rc):
     print("DisConnected result code " + str(rc))
     client.loop_stop()
+
