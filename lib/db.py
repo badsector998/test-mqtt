@@ -8,6 +8,7 @@ class db_instance:
         self.user = conf['user']
         self.pswd = conf['password']
         self.port = conf['port']
+        self.connect()
 
     def connect(self):
         connection = psycopg2.connect(
