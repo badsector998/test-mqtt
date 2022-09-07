@@ -2,3 +2,4 @@ config.yaml
 query.txt
 __pycache__
 republish.code-workspace
+log*
