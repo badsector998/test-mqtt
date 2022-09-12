@@ -18,9 +18,13 @@ def run():
     cl = repoMqtt(broker, topic, port, 60)
     client = cl.createMqttClient()
     client.connect(cl.broker, cl.port, 60)
+    repo.createDebugLog("Mqtt client connected")
     client.loop_start()
+    repo.createDebugLog("Mqtt client starting loop")
     dbIns = db_instance(db_conf)
+    repo.createDebugLog("DB instance has been created")
     data = dbIns.executeQuery("query.txt")
+    repo.createDebugLog("Query has been executed")
     measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
@@ -33,23 +37,26 @@ def run():
 
     for key in measurement:
         payload = repo.createPayload(key, measurement[key])
-        print(payload)
+        msgLength = len(measurement[key])
+        repo.createDebugLog("Destination info : ")
+        repo.createDebugLog(cl.broker + ", " + str(cl.port) + ", " + cl.topic)
+        repo.createDebugLog("Message length : " + str(msgLength))
+        repo.createDebugLog("sending payload : ")
+        repo.createDebugLog(payload)
         info = client.publish(cl.topic, payload)
+        repo.createDebugLog("Wait for publish")
         info.wait_for_publish(2)
-        print(
-                info.is_published(),
-                cl.broker,
-                cl.port,
-                cl.topic,
-                len(measurement[key])
-            )
+        repo.createDebugLog("Published status : ")
+        repo.createDebugLog(info.is_published())
+        repo.createDebugLog("wait for another payload")
         time.sleep(10)
 
+    repo.createDebugLog("all payload has been sent, closing mqtt connection")
     client.loop_stop()
     client.disconnect()
-    print("Closing db connection", dbIns.conn, dbIns.csr)
+    repo.createDebugLog("Closing db connection")
     dbIns.conn.close()
     dbIns.csr.close()
-    print("Closed db connection", dbIns.csr, dbIns.conn)
+    repo.createDebugLog("Closed db connection")
     del dbIns.conn
     del dbIns.csr

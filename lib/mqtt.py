@@ -42,4 +42,3 @@ def on_message(client, userdata, msg):
 
 def on_disconnect(client, userdata, rc):
     print("DisConnected result code " + str(rc))
-    client.loop_stop()
