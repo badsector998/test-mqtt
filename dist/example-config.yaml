@@ -1,0 +1,11 @@
+database:
+  db : mysql
+  host : localhost
+  user : mysql
+  password : root-password
+  port : 3306
+
+apis:
+  broker : localhost
+  topic : test
+  port : 1883

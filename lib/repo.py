@@ -38,8 +38,17 @@ def parseData(data):
     measured_at = data[5]
     stack_condition = data[6]
 
-    if current_hq_parameter_name != "":
+    if current_parameter_name == 'T. Partikulat':
+        current_parameter_name = "Particulate"
+
+    if (
+        current_hq_parameter_name is not None
+        and current_hq_parameter_name != ''
+    ):
         current_parameter_name = current_hq_parameter_name
+
+    if corrected_value is None:
+        corrected_value = value
 
     payload_build = {
                      'name': current_parameter_name,
