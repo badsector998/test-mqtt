@@ -35,11 +35,14 @@ def run():
                                                 values
                                             ).tolist()
 
-    for k, v in measurement.items():
-        for i in range(len(v)):
-            temp = []
-            temp = append(temp, v).tolist()
-            if i % 100 == 0:
+    for k in measurement:
+        temp = []
+        for i in range(len(measurement[k])):
+            index = i + 1
+            repo.Logs(f"data {index}")
+            temp = append(temp, measurement[k][i]).tolist()
+            if index % 10000 == 0:
+                repo.Logs(f"temp values : {temp}")
                 payload = repo.createPayload(k, temp)
                 msgLength = len(temp)
                 repo.Logs(f"Dest info : {cl.broker}, {cl.port}, {cl.topic}")
