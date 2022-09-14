@@ -18,13 +18,13 @@ def run():
     cl = repoMqtt(broker, topic, port, 60)
     client = cl.createMqttClient()
     client.connect(cl.broker, cl.port, 60)
-    repo.createDebugLog("Mqtt client connected")
+    repo.Logs("Mqtt client connected")
     client.loop_start()
-    repo.createDebugLog("Mqtt client starting loop")
+    repo.Logs("Mqtt client starting loop")
     dbIns = db_instance(db_conf)
-    repo.createDebugLog("DB instance has been created")
+    repo.Logs("DB instance has been created")
     data = dbIns.executeQuery("query.txt")
-    repo.createDebugLog("Query has been executed")
+    repo.Logs("Query has been executed")
     measurement = {}
     for ms in data:
         stack_mqtt_id, values = repo.parseData(ms)
@@ -35,21 +35,22 @@ def run():
                                                 values
                                             ).tolist()
 
-    for key in measurement:
-        payload = repo.createPayload(key, measurement[key])
-        msgLength = len(measurement[key])
-        repo.createDebugLog("Destination info : ")
-        repo.createDebugLog(cl.broker + ", " + str(cl.port) + ", " + cl.topic)
-        repo.createDebugLog("Message length : " + str(msgLength))
-        repo.createDebugLog("sending payload : ")
-        repo.createDebugLog(payload)
-        info = client.publish(cl.topic, payload)
-        repo.createDebugLog("Wait for publish")
-        info.wait_for_publish(2)
-        repo.createDebugLog("Published status : ")
-        repo.createDebugLog(info.is_published())
-        repo.createDebugLog("wait for another payload")
-        time.sleep(10)
+    for k, v in measurement.items():
+        for i in v:
+            temp = []
+            temp = append(temp, v).tolist()
+            if i % 100 == 0:
+                payload = repo.createPayload(k, temp)
+                msgLength = len(temp)
+                repo.Logs(f"Dest info : {cl.broker}, {cl.port}, {cl.topic}")
+                repo.Logs("Message length : " + str(msgLength))
+                repo.Logs(f"sending payload : {payload}")
+                info = client.publish(cl.topic, payload)
+                repo.Logs("Wait for publish")
+                info.wait_for_publish(2)
+                repo.Logs(f"Published status : {info.is_published()}")
+                repo.Logs("wait for another payload")
+                time.sleep(10)
 
     repo.createDebugLog("all payload has been sent, closing mqtt connection")
     client.loop_stop()
