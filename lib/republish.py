@@ -36,7 +36,7 @@ def run():
                                             ).tolist()
 
     for k, v in measurement.items():
-        for i in v:
+        for i in range(len(v)):
             temp = []
             temp = append(temp, v).tolist()
             if i % 100 == 0:
