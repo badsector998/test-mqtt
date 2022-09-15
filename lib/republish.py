@@ -35,32 +35,41 @@ def run():
                                                 values
                                             ).tolist()
 
+    repo.Logs(f"List cems/stack : {measurement.keys()}")
+
+    # TO DO : Improve query. Query per month then send.
+
     for k in measurement:
+        repo.Logs(f"Dest info : {cl.broker}, {cl.port}, {cl.topic}")
+        repo.Logs(f"sending payload for : {k}")
+        valuesLength = len(measurement[k])
+        start = 0
         temp = []
-        for i in range(len(measurement[k])):
+        for i in range(valuesLength):
             index = i + 1
-            repo.Logs(f"data {index}")
             temp = append(temp, measurement[k][i]).tolist()
-            if index % 10000 == 0:
+            if (index % 10000 == 0) or (index == valuesLength):
+                repo.Logs(f"data from {start} to {index}")
                 repo.Logs(f"temp values : {temp}")
                 payload = repo.createPayload(k, temp)
                 msgLength = len(temp)
-                repo.Logs(f"Dest info : {cl.broker}, {cl.port}, {cl.topic}")
-                repo.Logs(f"sending payload for : {k}")
                 repo.Logs("Message length : " + str(msgLength))
                 info = client.publish(cl.topic, payload)
                 repo.Logs("Wait for publish")
                 info.wait_for_publish(2)
                 repo.Logs(f"Published status : {info.is_published()}")
-                repo.Logs("wait for another payload")
+                repo.Logs("Reset temp list")
+                temp[:] = []
+                repo.Logs("wait for next payload")
+                start = index
                 time.sleep(10)
 
-    repo.createDebugLog("all payload has been sent, closing mqtt connection")
+    repo.Logs("all payload has been sent, closing mqtt connection")
     client.loop_stop()
     client.disconnect()
-    repo.createDebugLog("Closing db connection")
+    repo.Logs("Closing db connection")
     dbIns.conn.close()
     dbIns.csr.close()
-    repo.createDebugLog("Closed db connection")
+    repo.Logs("Closed db connection")
     del dbIns.conn
     del dbIns.csr
