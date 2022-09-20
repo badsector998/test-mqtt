@@ -23,8 +23,8 @@ class db_instance:
 
     def executeQuery(self, queryText):
         cursor = self.csr
-        query_string = openQuery(queryText)
-        cursor.execute(query_string)
+        # query_string = openQuery(queryText)
+        cursor.execute(queryText)
         data = cursor.fetchall()
         return data
 

@@ -67,17 +67,17 @@ def createPayload(key, value):
     return payload
 
 
-def Logs(message):
+def Logs(message, fileName):
     now = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
     print(f"{now} : {message}")
-    createDebugLog(message)
+    createDebugLog(message, fileName)
 
 
-def createDebugLog(message):
+def createDebugLog(message, fileName):
     logging.basicConfig(
-        filename="log.txt",
+        filename=fileName,
         level=logging.DEBUG,
         format="%(asctime)s %(message)s",
-        filemode="w"
+        filemode="a"
     )
     logging.debug(message)

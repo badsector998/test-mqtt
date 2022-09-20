@@ -4,4 +4,5 @@ __pycache__
 republish.code-workspace
 log*
 build
+query-test*
 *.spec
