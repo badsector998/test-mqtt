@@ -5,3 +5,5 @@ republish.code-workspace
 log*
 build
 *.spec
+dist/main.exe
+*.exe

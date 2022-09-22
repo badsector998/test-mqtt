@@ -48,7 +48,7 @@ def run():
         for i in range(valuesLength):
             index = i + 1
             temp = append(temp, measurement[k][i]).tolist()
-            if (index % 10000 == 0) or (index == valuesLength):
+            if (index % 1000 == 0) or (index == valuesLength):
                 repo.Logs(f"data from {start} to {index}")
                 repo.Logs(f"temp values : {temp}")
                 payload = repo.createPayload(k, temp)
@@ -62,7 +62,7 @@ def run():
                 temp[:] = []
                 repo.Logs("wait for next payload")
                 start = index
-                time.sleep(10)
+                time.sleep(60)
 
     repo.Logs("all payload has been sent, closing mqtt connection")
     client.loop_stop()
