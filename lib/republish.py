@@ -18,12 +18,16 @@ def run():
     db_conf, broker, topic, port = initiateProgram()
     cl = repoMqtt(broker, topic, port, 60)
     client = cl.createMqttClient()
+    repo.Logs("Mqtt client connected", "logs.txt")
+    client.connect(cl.broker, cl.port, 60)
+    repo.Logs("Mqtt client starting loop", "logs.txt")
+    client.loop_start()
     repo.Logs("MQTT client instance has been created", "logs.txt")
 
     dateStart = datetime.datetime(
         year=2022,
         month=1,
-        day=4,
+        day=30,
         hour=00,
         minute=00,
         second=00
@@ -92,8 +96,6 @@ def run():
                         "Message length : " + str(msgLength),
                         logFileName
                     )
-                    client.connect(cl.broker, cl.port, 60)
-                    repo.Logs("Mqtt client connected", logFileName)
                     info = client.publish(cl.topic, payload)
                     repo.Logs("Wait for publish", logFileName)
                     info.wait_for_publish(2)
@@ -119,6 +121,7 @@ def run():
         "all payload has been sent, closing mqtt connection",
         "logs.txt"
     )
+    client.loop_stop()
     client.disconnect()
     repo.Logs("Closing db connection", "logs.txt")
     dbIns.conn.close()

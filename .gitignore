@@ -6,3 +6,4 @@ log*
 build
 query-test*
 *.spec
+dist/main.exe
